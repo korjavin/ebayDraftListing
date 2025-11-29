@@ -1,5 +1,7 @@
 # eBay Draft Listing Generator
 
+[![Build and Test](https://github.com/korjavin/ebayDraftListing/actions/workflows/build.yml/badge.svg)](https://github.com/korjavin/ebayDraftListing/actions/workflows/build.yml)
+
 A Golang CLI application that automatically generates eBay draft listings from photos using Google's Gemini AI.
 
 ## Features
