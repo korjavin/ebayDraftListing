@@ -1,3 +1,3 @@
 module github.com/korjavin/ebayDraftListing
 
-go 1.24.7
+go 1.21

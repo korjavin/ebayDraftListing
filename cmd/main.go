@@ -20,7 +20,7 @@ func main() {
 func run() error {
 	// Check for photo arguments
 	if len(os.Args) < 2 {
-		return fmt.Errorf("usage: %s <photo1> [photo2] [photo3] ...", os.Args[0])
+		return fmt.Errorf("usage: %s <photo1> [photo2] [photo3]", os.Args[0])
 	}
 
 	photoPaths := os.Args[1:]
