@@ -43,7 +43,8 @@ Create a `.env` file or set the following environment variables:
 ```bash
 # Gemini API Configuration
 export GEMINI_API_KEY="your-gemini-api-key"
-export PROMPT="Generate a compelling eBay listing title and description for the product shown in these images. Return the result in JSON format with 'Title' and 'Description' fields."
+export EBAY_PROMPT="Generate a compelling eBay listing title and description for the product shown in these images.
+ads"
 
 # eBay API Configuration
 export EBAY_CLIENT_ID="your-ebay-client-id"
@@ -83,7 +84,7 @@ go run cmd/main.go photo1.jpg photo2.png
 
 ```bash
 export GEMINI_API_KEY="AIza..."
-export PROMPT="Create an eBay listing for this product. Include a catchy title (max 80 chars) and detailed description. Format as JSON with Title and Description fields."
+export EBAY_PROMPT="Create an eBay listing for this product. Include a catchy title (max 80 chars) and detailed description. Format as JSON with Title and Description fields."
 export EBAY_CLIENT_ID="YourApp-..."
 export EBAY_CLIENT_SECRET="..."
 export EBAY_REFRESH_TOKEN="v^1.1#..."
@@ -136,21 +137,21 @@ ebayDraftListing/
 
 ## Customizing the Prompt
 
-The `PROMPT` environment variable controls how Gemini generates your listing content. You can customize it for different product types:
+The `EBAY_PROMPT` environment variable controls how Gemini generates your listing content. You can customize it for different product types:
 
 **For electronics:**
 ```bash
-export PROMPT="Analyze these product images and create an eBay listing. Include technical specifications, condition, and key features. Return JSON with Title and Description fields."
+export EBAY_PROMPT="Analyze these product images and create an eBay listing. Include technical specifications, condition, and key features. Return JSON with Title and Description fields."
 ```
 
 **For collectibles:**
 ```bash
-export PROMPT="Create an eBay listing for this collectible item. Highlight rarity, condition, and historical significance. Return JSON with Title and Description fields."
+export EBAY_PROMPT="Create an eBay listing for this collectible item. Highlight rarity, condition, and historical significance. Return JSON with Title and Description fields."
 ```
 
 **For clothing:**
 ```bash
-export PROMPT="Generate an eBay listing for this clothing item. Include size, material, brand, condition, and style details. Return JSON with Title and Description fields."
+export EBAY_PROMPT="Generate an eBay listing for this clothing item. Include size, material, brand, condition, and style details. Return JSON with Title and Description fields."
 ```
 
 ## Troubleshooting

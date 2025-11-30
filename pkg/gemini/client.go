@@ -9,12 +9,13 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/korjavin/ebayDraftListing/pkg/models"
 )
 
 const (
-	geminiAPIURL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent"
+	geminiAPIURL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent"
 )
 
 // Client handles interactions with the Gemini API
@@ -98,21 +99,43 @@ func (c *Client) GenerateListingContent(photoPaths []string) (*models.ListingCon
 		return nil, fmt.Errorf("failed to marshal request: %w", err)
 	}
 
-	// Make API request
+	// Make API request with exponential backoff retry for 429 errors
 	url := fmt.Sprintf("%s?key=%s", geminiAPIURL, c.apiKey)
-	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
-	if err != nil {
-		return nil, fmt.Errorf("failed to make API request: %w", err)
-	}
-	defer resp.Body.Close()
+	maxRetries := 5
+	var resp *http.Response
+	var body []byte
 
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read response: %w", err)
-	}
+	for attempt := 0; attempt < maxRetries; attempt++ {
+		resp, err = http.Post(url, "application/json", bytes.NewBuffer(jsonData))
+		if err != nil {
+			return nil, fmt.Errorf("failed to make API request: %w", err)
+		}
 
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("API request failed with status %d: %s", resp.StatusCode, string(body))
+		body, err = io.ReadAll(resp.Body)
+		resp.Body.Close()
+		if err != nil {
+			return nil, fmt.Errorf("failed to read response: %w", err)
+		}
+
+		// If successful or non-retryable error, break
+		if resp.StatusCode == http.StatusOK {
+			break
+		}
+
+		// Only retry on 429 (rate limit)
+		if resp.StatusCode != http.StatusTooManyRequests {
+			return nil, fmt.Errorf("API request failed with status %d: %s", resp.StatusCode, string(body))
+		}
+
+		// If this was the last attempt, return error
+		if attempt == maxRetries-1 {
+			return nil, fmt.Errorf("API request failed after %d retries with status %d: %s", maxRetries, resp.StatusCode, string(body))
+		}
+
+		// Exponential backoff: 1s, 2s, 4s, 8s, 16s
+		backoff := time.Duration(1<<uint(attempt)) * time.Second
+		fmt.Printf("Rate limited (429), retrying in %v... (attempt %d/%d)\n", backoff, attempt+1, maxRetries)
+		time.Sleep(backoff)
 	}
 
 	// Parse response

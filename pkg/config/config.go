@@ -22,7 +22,7 @@ type Config struct {
 func Load() (*Config, error) {
 	config := &Config{
 		GeminiAPIKey:     os.Getenv("GEMINI_API_KEY"),
-		Prompt:           os.Getenv("PROMPT"),
+		Prompt:           os.Getenv("EBAY_PROMPT"),
 		EbayClientID:     os.Getenv("EBAY_CLIENT_ID"),
 		EbayClientSecret: os.Getenv("EBAY_CLIENT_SECRET"),
 		EbayRefreshToken: os.Getenv("EBAY_REFRESH_TOKEN"),
@@ -35,7 +35,7 @@ func Load() (*Config, error) {
 	}
 
 	if config.Prompt == "" {
-		return nil, fmt.Errorf("PROMPT environment variable is required")
+		return nil, fmt.Errorf("EBAY_PROMPT environment variable is required")
 	}
 
 	if config.EbayClientID == "" {
